@@ -32,11 +32,15 @@ Elm.Main.make = function (_elm) {
    var dateSignal = A2(Signal._op["<~"],
    Date.fromTime,
    Time.every(Time.second));
+   var secondSignal = A2(Signal._op["<~"],
+   Date.second,
+   dateSignal);
    var main = A2(Signal._op["<~"],
    Text.asText,
-   dateSignal);
+   secondSignal);
    _elm.Main.values = {_op: _op
                       ,dateSignal: dateSignal
+                      ,secondSignal: secondSignal
                       ,main: main};
    return _elm.Main.values;
 };</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Main)</script><noscript></noscript></body></html>

@@ -5,4 +5,8 @@ dateSignal : Signal Date.Date
 
 dateSignal = Date.fromTime <~ Time.every second
 
-main = asText <~ dateSignal
+secondSignal: Signal Int
+
+secondSignal = Date.second <~ dateSignal
+
+main = asText <~ secondSignal
