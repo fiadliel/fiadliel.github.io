@@ -1,4 +1,8 @@
+import Time
+import Date
 
-main : Element
+dateSignal : Signal Date.Date
 
-main = plainText "Hello, world!"
+dateSignal = Date.fromTime <~ Time.every second
+
+main = asText <~ dateSignal

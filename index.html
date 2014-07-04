@@ -13,6 +13,7 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main";
    var Basics = Elm.Basics.make(_elm);
    var Color = Elm.Color.make(_elm);
+   var Date = Elm.Date.make(_elm);
    var Graphics = Graphics || {};
    Graphics.Collage = Elm.Graphics.Collage.make(_elm);
    var Graphics = Graphics || {};
@@ -28,8 +29,14 @@ Elm.Main.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var main = Text.plainText("Hello, world!");
+   var dateSignal = A2(Signal._op["<~"],
+   Date.fromTime,
+   Time.every(Time.second));
+   var main = A2(Signal._op["<~"],
+   Text.asText,
+   dateSignal);
    _elm.Main.values = {_op: _op
+                      ,dateSignal: dateSignal
                       ,main: main};
    return _elm.Main.values;
 };</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Main)</script><noscript></noscript></body></html>
