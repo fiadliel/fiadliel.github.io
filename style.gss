@@ -1,6 +1,4 @@
 #hello-world {      
-  width: == ::window[width] - 480;            
-  height: == ::window[height] - 480;
   center-x: == ::window[center-x];
   center-y: == ::window[center-y];        
 }
