@@ -28,11 +28,13 @@ object SkeletonService {
   }
 }
 
-object SkeletonServer extends App {
-  BlazeBuilder.bindHttp(8080)
-    .mountService(SkeletonService.service, "/")
-    .run
-    .awaitShutdown()
+object SkeletonServer {
+  def main(args: Array[String]): Unit = {
+    BlazeBuilder.bindHttp(8080)
+      .mountService(SkeletonService.service, "/")
+      .run
+      .awaitShutdown()
+  }
 }
 {% endhighlight %}
 
