@@ -17,8 +17,8 @@ libraryDependencies += "org.http4s" %% "http4s-dsl"          % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 {% endhighlight %}
 
-De code
--------
+The code
+--------
 
 Then a basic skeleton for serving can look like:
 
