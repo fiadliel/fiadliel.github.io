@@ -5,14 +5,20 @@ categories: http4s
 ---
 Setting up a http4s project is fairly simple.
 
+Build configuration
+-------------------
+
 Set up a `build.sbt` like this:
 
 {% highlight scala %}
 val http4sVersion = "0.12.1"
 
-libraryDependencies += "org.http4s" %% "http4s-dsl"          % http4sVersion  // to use the core dsl
-libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion  // to use the blaze backend
+libraryDependencies += "org.http4s" %% "http4s-dsl"          % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 {% endhighlight %}
+
+De code
+-------
 
 Then a basic skeleton for serving can look like:
 
@@ -50,6 +56,9 @@ the left-hand-side (which we will generally write using the http4s DSL), the
 right-hand-side will return a `scalaz.concurrent.Task`, which, when run, will
 return the response.
 
+Task in a Nutshell
+------------------
+
 If you haven't come across `Task` before, an initial intuition could be that it is
 somewhat like `scala.concurrent.Future` in that it can encompass the idea of
 asynchronous computation. Some obvious differences in behaviour are that it does
@@ -58,6 +67,9 @@ result on request. So at the point where a `Task` is returned, no work has yet
 been done to generate a response. This does not mean that we can't write code which
 depends on the result - for a start, its `map` and `flatMap` methods allow the
 response to be adapted.
+
+Upcoming
+--------
 
 The above code is enough to get a service running. The next step will be to
 parse HTTP requests, in particular, query and path parameters. We will look in
