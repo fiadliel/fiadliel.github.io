@@ -54,7 +54,7 @@ asynchronous computation. Some obvious differences in behaviour are that it does
 no memoization of the result, and it only does the computation to calculate the
 result on request. So at the point where a `Task` is returned, no work has yet
 been done to generate a response. This does not mean that we can't write code which
-depends on the result - for a start, its `map` and `flatMap` calls allow the
+depends on the result - for a start, its `map` and `flatMap` methods allow the
 response to be adapted.
 
 The above code is enough to get a service running. The next step will be to
