@@ -3,10 +3,21 @@ layout: post
 title:  "Setting up a http4s skeleton project"
 categories: http4s
 ---
-Setting up a http4s project is fairly simple.
+## Introduction
 
-Build configuration
--------------------
+[http4s](https://http4s.org) provides a minimal interface for creating a HTTP
+server using Scala. It tries to offer a typesafe and functional approach to
+building applications with HTTP. On top of that, a user may then choose from
+a number of backends on which their service can run (currently, the main
+options are Blaze and servlets).
+
+The documentation for http4s is fairly light at the moment, so I hope to
+provide a series of posts here to go through the main features that will
+be needed for creating a full application with the service.
+
+First, we will look at the setup of an initial skeleton application.
+
+## Build configuration
 
 Set up a `build.sbt` like this:
 
@@ -17,8 +28,7 @@ libraryDependencies += "org.http4s" %% "http4s-dsl"          % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 {% endhighlight %}
 
-The code
---------
+## The code
 
 Then a basic skeleton for serving can look like:
 
@@ -56,8 +66,7 @@ the left-hand-side (which we will generally write using the http4s DSL), the
 right-hand-side will return a `scalaz.concurrent.Task`, which, when run, will
 return the response.
 
-Task in a Nutshell
-------------------
+### Task in a Nutshell
 
 If you haven't come across `Task` before, an initial intuition could be that it is
 somewhat like `scala.concurrent.Future` in that it can encompass the idea of
@@ -68,8 +77,7 @@ been done to generate a response. This does not mean that we can't write code wh
 depends on the result - for a start, its `map` and `flatMap` methods allow the
 response to be adapted.
 
-Upcoming
---------
+## Upcoming
 
 The above code is enough to get a service running. The next step will be to
 parse HTTP requests, in particular, query and path parameters. We will look in
