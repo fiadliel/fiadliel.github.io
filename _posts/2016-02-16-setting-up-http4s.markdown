@@ -58,4 +58,5 @@ depends on the result - for a start, its `map` and `flatMap` methods allow the
 response to be adapted.
 
 The above code is enough to get a service running. The next step will be to
-parse HTTP requests, in particular, query and path parameters.
+parse HTTP requests, in particular, query and path parameters. We will look in
+more detail at `HttpService`, and how the request pattern matching works.
