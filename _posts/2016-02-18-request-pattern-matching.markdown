@@ -109,7 +109,7 @@ val service = HttpService {
 *Use this when there is a known number of slashes in the path. This matching
 style cannot match an arbitrary number of slashes in a path.*
 
-Paths are matched from left to right. The first matcher *must* be
+Paths are matched from left to right. The first matcher *should* be
 `Root`, which represents the initial root of the path. Successive
 parts of the path are then matched using the `/` matcher, which
 matches the next part of the path, but not including a '/' character.
@@ -203,4 +203,95 @@ object UUID {
 }
 {% endhighlight %}
 
-### TODO: Query parameters
+### Query parameter matching
+
+A query parameter matcher has to match against a particular key, and possibly
+also against the contents of the value(s). We will look at the basic structure
+of a pattern match against query parameters, followed by what is needed to
+implement particular matchers.
+
+#### Structure of a pattern match
+
+When matching against query parameters, the pattern match will look something
+like this:
+
+{% highlight scala %}
+import org.http4s._
+import org.http4s.dsl._
+
+val service = HttpService {
+  case GET -> Root / path :? Param1(v1) +& Param2(v2) =>
+    { /* generate response */ }
+}
+{% endhighlight %}
+
+We have two new matchers here.
+
+First is `:?` which takes a request, and extracts a `Map[String, Seq[String]]`
+representation of the query parameters. Intuitively, it marks the division
+between matching on the path of a request, and matching on query parameters.
+
+Second is `+&`. Its job is to allow multiple matches to take place against
+the query parameters.
+
+#### Basic pattern matchers
+
+The next question is how to specify one of these matchers. At the lowest
+level, we create an object with an `unapply` method, which takes a
+`Map[String, Seq[String]]`, and returns an `Option[T]` where `T` is the
+type of variable to be bound. But this is quite a low-level check, http4s
+offers some helpers to make common matching tasks easier.
+
+#### Query parameter type classes
+
+#### Defining the parameter key used by a type
+`QueryParam` is a type class which defines the key used to encode a
+particular type of variable. For example, if there was a `Page` type,
+one might want to encode the key for this as the string "page".
+
+The code might look like this:
+{% highlight scala %}
+implicit val pageQueryParam = QueryParam[Page].fromKey("page")
+{% endhighlight %}
+This type class can be used for both encoding and decoding a certain
+variable type, to ensure that they are consistent.
+
+#### Defining the encoder for a type
+`QueryParamEncoder` is a type class which implements the encoding from
+a particular type, to the string representation in the query string.
+
+First, we consider the encoders that come with http4s:
+
+ - Boolean
+ - Double
+ - Float
+ - Short
+ - Int
+ - Long
+ - String
+
+We can make use of these to use a common encoding of the basic types,
+rather than it varying across implementations.
+
+If our Page implementation looks like:
+{% highlight scala %}
+case class Page(value: Int) extends AnyVal
+{% endhighlight %}
+then we would probably want to encode the inner value as an Int, using the
+common encoding used by http4s. That can be done using
+`QueryParamEncoder[T].encodeBy`. This takes a function `T => U`, and
+then looks for an encoder for the type `U`. Luckily, Int is already
+supported, so this works perfectly.
+{% highlight scala %}
+implicit val pageQueryParamEncoder = QueryParamEncoder[Page].encodeBy(_.value)
+{% endhighlight %}
+
+We can write the string representation ourselves instead of relying on another
+type class, by instead using `QueryParamEncoder[Page].encode`. This will
+instead take a function `T => String`.
+
+#### Defining the decoder for a type
+`QueryParamDecoder` is the inverse of `QueryParamEncoder`, and provides the
+information on how to convert a string into a particular type.
+
+... to be continued.
