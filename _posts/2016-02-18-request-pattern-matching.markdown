@@ -244,7 +244,7 @@ offers some helpers to make common matching tasks easier.
 
 #### Query parameter type classes
 
-#### Defining the parameter key used by a type
+##### Defining the parameter key used by a type
 `QueryParam` is a type class which defines the key used to encode a
 particular type of variable. For example, if there was a `Page` type,
 one might want to encode the key for this as the string "page".
@@ -256,11 +256,11 @@ implicit val pageQueryParam = QueryParam[Page].fromKey("page")
 This type class can be used for both encoding and decoding a certain
 variable type, to ensure that they are consistent.
 
-#### Defining the encoder for a type
-`QueryParamEncoder` is a type class which implements the encoding from
-a particular type, to the string representation in the query string.
+##### Defining the decoder for a type
+`QueryParamDecoder` is a type class which implements the decoding from
+the string representation in the query string, to a particular type.
 
-First, we consider the encoders that come with http4s:
+First, we consider the decoders that come with http4s:
 
  - Boolean
  - Double
@@ -277,21 +277,42 @@ If our Page implementation looks like:
 {% highlight scala %}
 case class Page(value: Int) extends AnyVal
 {% endhighlight %}
-then we would probably want to encode the inner value as an Int, using the
-common encoding used by http4s. That can be done using
-`QueryParamEncoder[T].encodeBy`. This takes a function `T => U`, and
-then looks for an encoder for the type `U`. Luckily, Int is already
-supported, so this works perfectly.
+then we would probably want to decode an Int using the common encoding used by
+http4s, and then wrap it in a `Page`. That can be done using
+`QueryParamDecoder[T].decodeBy`. This takes a function `U => T`, and
+applies it *after* using a decoder for the type `U`.
 {% highlight scala %}
-implicit val pageQueryParamEncoder = QueryParamEncoder[Page].encodeBy(_.value)
+implicit val pageQueryParamDecoder = QueryParamDecoder[Page].decodeBy(Page.apply)
 {% endhighlight %}
 
-We can write the string representation ourselves instead of relying on another
-type class, by instead using `QueryParamEncoder[Page].encode`. This will
-instead take a function `T => String`.
+##### Defining the encoder for a type
+`QueryParamEncoder` is the inverse of `QueryParamDecoder`, and provides the
+information on how to convert a particular type into a string. This is not needed
+for pattern matching, but may be useful when generating URLs in your code. I just
+mention it here because you will often want to define both at the same time.
 
-#### Defining the decoder for a type
-`QueryParamDecoder` is the inverse of `QueryParamEncoder`, and provides the
-information on how to convert a string into a particular type.
+#### Using parameter matcher helpers
 
-... to be continued.
+`QueryParamMatcher` uses both the `QueryParamDecoder` and `QueryParam` type
+classes, and requires the least amount of extra information to use. If you
+want to match a paging value, you could write a matcher like this:
+{% highlight scala %}
+object PageVal extends QueryParamMatcher[Page]
+{% endhighlight %}
+
+You can then use this with some code like:
+{% highlight scala %}
+import org.http4s._
+import org.http4s.dsl._
+
+val service = HttpService {
+  case GET -> Root / "results" :? PageVal(page) =>
+    { /* generate response */ }
+}
+{% endhighlight %}
+
+This will create a binding named `page`, with a value of type `Page`, as long as
+it is present and decodes correctly.
+
+`OptionalQueryParamMatcher` does the same thing, but returns an `Option[T]`,
+that is, it will match if the parameter does not exist, but returns `None`.
