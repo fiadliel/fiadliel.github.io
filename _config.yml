@@ -17,3 +17,6 @@ github_username:  fiadliel
 
 # Build settings
 markdown: kramdown
+
+gems:
+  - jekyll-sitemap
